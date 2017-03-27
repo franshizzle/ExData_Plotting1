@@ -1,0 +1,53 @@
+## Exploratory Data Analysis
+## Week 1 Course Project
+## Francis Brua
+## PLOT 1
+
+library(RCurl)
+library(data.table)
+
+## Download the data from UCI
+
+FilePath <- "e:/coursera/exploratory_data_analysis/week1"
+setwd(FilePath)
+
+Url <- "https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2Fhousehold_power_consumption.zip"
+
+download.file(Url, destfile = "PowerConsumption.zip", method = "libcurl")
+unzip(zipfile = "PowerConsumption.zip", exdir = "./data")
+
+## Read Files and Create Tables
+
+PowerData <- read.table("./data/household_power_consumption.txt", header = TRUE, sep = ";", na.strings = "?",
+                        colClasses = c('character'   ##Date
+                                      , 'character'  ##Time
+                                      , 'numeric'    ##Global_active_power
+                                      , 'numeric'    ##Global_reactive_power
+                                      , 'numeric'    ##Voltage
+                                      , 'numeric'    ##Global_intensity
+                                      , 'numeric'    ##Sub_metering_1
+                                      , 'numeric'    ##Sub_metering_2
+                                      , 'numeric'    ##Sub_metering_3
+                                      )
+                        )
+## Format date 
+PowerData$Date <- as.Date(PowerData$Date, "%d/%m/%Y")
+
+## Subset data to only include 2007-02-01 and 2007-02-02
+
+PowerData <- subset(PowerData, Date >= as.Date("2007-02-01") & Date <= as.Date("2007-02-02"))
+
+## Combine Date and Time
+
+PowerData$TimeStamp <- strptime(paste(PowerData$Date, PowerData$Time), format = "%Y-%m-%d %H:%M:%S")
+
+## Create Histogram for PLOT 1
+
+hist(PowerData$Global_active_power, xlab = "Global Active Power (kilowatts)", col = "red", main = "Global Active Power")
+
+## Save PLOT as PNG
+
+dev.copy(png, "plot1.png", width = 480, height = 480)
+dev.off()
+
+
